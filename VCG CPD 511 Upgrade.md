@@ -453,7 +453,14 @@ cpd-cli manage apply-rsi-patches \
 
 ### 2.5 Updating cpdbr service
 
-1. Upgrade the cpdbr-tenant component for the instance.
+1. Upgrade the cpdbr-tenant component for the instance. 
+
+**NOTE:**
+<br>This can be doing in a maintenance window
+
+```bash
+export OADP_OPERATOR_NS=<oadp-operator-project>
+```
 
 ```bash
 cpd-cli oadp install \
