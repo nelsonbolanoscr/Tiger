@@ -27,16 +27,16 @@ Components: ibm-cert-manager,ibm-licensing,cpfs,cpd_platform,watson_assistant,wa
 ## Table of Content
 
 * [1. Set up client workstation](VCG%20CPD%20511%20Upgrade.md#1-set-up-client-workstation)
-  - [1.1 Prepare the client workstation](VCG_VZ_510_511.md#11-prepare-the-client-workstation)
-  - [1.2 Update Environment Variables for the upgrade to Version 5.1.1](VCG_VZ_510_511.md#12-update-environment-variables-for-the-upgrade-to-version-511)
-  - [1.3 Ensure the cpd-cli manage plug-in the latest version of the olm-utils image](VCG_VZ_510_511.md#13-ensure-the-cpd-cli-manage-plug-in-the-latest-version-of-the-olm-utils-image)
-  - [1.4 Health Check](VCG_VZ_510_511.md#14-health-check)
-* [2. Upgrade CPD to 5.1.1](VCG_VZ_510_511.md#2-upgrade-cpd-to-511)
-  - [2.1 Upgrading prerequisite software](VCG_VZ_510_511.md#21-upgrading-prerequisite-software)
-  - [2.2 Upgrading shared cluster components](VCG_VZ_510_511.md#22-upgrading-shared-cluster-components)
-  - [2.3 Preparing to upgrade instance of IBM Software Hub](VCG_VZ_510_511.md#23-preparing-to-upgrade-instance-of-ibm-software-hub)
-  - [2.4 Upgrade IBM Software Hub](VCG_VZ_510_511.md#24-upgrade-ibm-software-hub)
-  - [2.5 Updating cpdbr service](VCG_VZ_510_511.md#25-updating-cpdbr-service)
+  - [1.1 Prepare the client workstation](VCG%20CPD%20511%20Upgrade.md#11-prepare-the-client-workstation)
+  - [1.2 Update Environment Variables for the upgrade to Version 5.1.1](VCG%20CPD%20511%20Upgrade.md#12-update-environment-variables-for-the-upgrade-to-version-511)
+  - [1.3 Ensure the cpd-cli manage plug-in the latest version of the olm-utils image](VCG%20CPD%20511%20Upgrade.md#13-ensure-the-cpd-cli-manage-plug-in-the-latest-version-of-the-olm-utils-image)
+  - [1.4 Health Check](VCG%20CPD%20511%20Upgrade.md#14-health-check)
+* [2. Upgrade CPD to 5.1.1](VCG%20CPD%20511%20Upgrade.md#2-upgrade-cpd-to-511)
+  - [2.1 Upgrading prerequisite software](VCG%20CPD%20511%20Upgrade.md#21-upgrading-prerequisite-software)
+  - [2.2 Upgrading shared cluster components](VCG%20CPD%20511%20Upgrade.md#22-upgrading-shared-cluster-components)
+  - [2.3 Preparing to upgrade instance of IBM Software Hub](VCG%20CPD%20511%20Upgrade.md#23-preparing-to-upgrade-instance-of-ibm-software-hub)
+  - [2.4 Upgrade IBM Software Hub](VCG%20CPD%20511%20Upgrade.md#24-upgrade-ibm-software-hub)
+  - [2.5 Updating cpdbr service](VCG%20CPD%20511%20Upgrade.md#25-updating-cpdbr-service)
 
 ## 1. Set up client workstation
 
