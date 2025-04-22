@@ -26,7 +26,7 @@ Components: ibm-cert-manager,ibm-licensing,cpfs,cpd_platform,watson_assistant,wa
 
 ## Table of Content
 
-* [1. Set up client workstation](VCG_VZ_510_511.md#1-set-up-client-workstation)
+* [1. Set up client workstation](VCG%20CPD%20511%20Upgrade.md#1-set-up-client-workstation)
   - [1.1 Prepare the client workstation](VCG_VZ_510_511.md#11-prepare-the-client-workstation)
   - [1.2 Update Environment Variables for the upgrade to Version 5.1.1](VCG_VZ_510_511.md#12-update-environment-variables-for-the-upgrade-to-version-511)
   - [1.3 Ensure the cpd-cli manage plug-in the latest version of the olm-utils image](VCG_VZ_510_511.md#13-ensure-the-cpd-cli-manage-plug-in-the-latest-version-of-the-olm-utils-image)
