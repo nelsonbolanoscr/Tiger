@@ -501,7 +501,79 @@ watch 'oc get WatsonAssistant wa -n cpd-operands --output jsonpath="{.status.pro
 cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
 ```
 
-6. Enable `zen-rsi-evictor-cron-job`.
+6. Validate EBS Postgress Upgrade.
+
+* 6.1 Set an instance enviromental variable
+
+```bash
+export INSTANCE=wa
+```
+
+* 6.2 Make sure wa instance goes to fully verified state.
+
+```bash
+oc get wa
+```
+
+* 6.3 Check if `$INSTANCE-postgres-16` cluster is in healthy or ready state.
+
+```bash
+oc get cluster $INSTANCE-postgres-16
+
+oc get pods -l app=$INSTANCE-postgres-16
+```
+
+* 6.4 Check whether all the jobs are in completed state.
+
+```bash
+oc get jobs -l slot=$INSTANCE
+```
+
+* 6.5 Check whether the store cronjob is pointing to the new EDB Postgres-16 cluster.
+
+```bash
+oc get cronjob $INSTANCE-store-cronjob  -o yaml | grep postgres
+```
+
+* 6.6 f wa-postgres-16-rw.cpd.svc points to old EDB Postgres cluster instead of EDB Postgres-16, then delete the cronjob with the following command. This helps the operator to create a new cronjob with latest config.
+
+```bash
+oc delete cronjob $INSTANCE-store-cronjob
+```
+
+7. Cleaning up resources.
+
+* 7.1 Set an instance environment variable.
+
+```bash
+export INSTANCE=wa
+```
+
+* 7.2 Delete old EDB Postgres Version 12 cluster.
+
+```bash
+oc delete cluster -l app=$INSTANCE-postgres,component=postgres,service=conversation,slot=$INSTANCE
+```
+
+* 7.3 Delete old certificate created for EDB Postgres Version 12 cluster.
+
+```bash
+oc delete cert -l component=cert-postgres,service=conversation,slot=$INSTANCE
+```
+
+* 7.4 Delete old secrets created by the preceding certificate.
+
+```bash
+oc delete secret -l component=cert-postgres,service=conversation,slot=$INSTANCE
+```
+
+* 7.5 Delete the watsonx Assistant created old secrets.
+
+```bash
+oc delete secret -l app=$INSTANCE-postgres,component=postgres,service=conversation
+```
+
+8. Enable `zen-rsi-evictor-cron-job`.
 
 ```bash
 oc patch CronJob zen-rsi-evictor-cron-job \
@@ -510,7 +582,7 @@ oc patch CronJob zen-rsi-evictor-cron-job \
 --patch='{"spec":{"suspend": false}}'
 ```
 
-7. Apply RSI patches.
+9. Apply RSI patches.
 
 ```bash
 cpd-cli manage apply-rsi-patches \
