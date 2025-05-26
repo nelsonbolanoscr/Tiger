@@ -55,6 +55,11 @@ oc project ${PROJECT_CPD_INST_OPERANDS}
 for ns in ${PROJECT_CPFS_OPS} ${PROJECT_CPD_INST_OPERANDS}; do echo "==== Namespace:  $ns ====" ; oc get project $ns -o yaml > project-$ns.yaml;oc get ResourceQuota -o yaml -n $ns > quota-$ns.yaml;oc get LimitRange -o yaml -n $ns > limitrange-$ns.yaml;oc get namespacescope -o yaml -n $ns > namespacescope-$ns.yaml;oc get NetworkPolicy -o yaml -n $ns > networkpolicy-$ns.yaml;oc get csv -n $ns > csv-$ns.yaml;oc get sub -n $ns > sub-$ns.yaml;oc get pods -n $ns > pods-$ns.yaml;done
 ```
 
+4. Check cert manager.
+
+```bash
+oc get csv | grep ibm-cert-manager > cert-manager.txt
+```
 ## 3. Validate CR status
 
 1. Run the cpd-cli manage login-to-ocp command to log in to the cluster.
