@@ -1,8 +1,8 @@
-# CPD Upgrade Runbook - v.5.1.0 to 5.1.1
+# CPD Upgrade Runbook - v.5.0.0 to 5.1.1
 
 ## Upgrade documentation
 
-* [Upgrading from IBM Cloud Pak for Data Version 5.1.0 to Version 5.1.1](https://www.ibm.com/docs/en/software-hub/5.1.x?topic=upgrading-from-cloud-pak-data-version-50)
+* [Upgrading from IBM Cloud Pak for Data Version 5.0.0 to Version 5.1.1](https://www.ibm.com/docs/en/software-hub/5.1.x?topic=upgrading-from-cloud-pak-data-version-50)
 
 ## Upgrade context
 
@@ -256,8 +256,8 @@ cpd-cli manage setup-instance-topology \
 --license_acceptance=true
 ```
 
-### Known issue:
-https://github.ibm.com/PrivateCloud-analytics/CPD-Quality/issues/42294
+<!-- ### Known issue:
+https://github.ibm.com/PrivateCloud-analytics/CPD-Quality/issues/42294 -->
 
 Review `${STG_CLASS_BLOCK}` is set in the `cpd_vars.sh` file
 
@@ -300,7 +300,6 @@ oc get scheduling -A
 cpd-cli manage apply-cluster-components \
 --release=${VERSION} \
 --license_acceptance=true \
---cert_manager_ns=${PROJECT_CERT_MANAGER} \
 --licensing_ns=${PROJECT_LICENSE_SERVICE}
 ```
 
@@ -310,13 +309,13 @@ cpd-cli manage apply-cluster-components \
 oc get pods --namespace=${PROJECT_LICENSE_SERVICE}
 ```
 
-6. Confirm IBM Certificate Manager pods are Running or Completed.
+<!-- 6. Confirm IBM Certificate Manager pods are Running or Completed.
 
 ```bash
 oc get pods --namespace=${PROJECT_CERT_MANAGER}
-```
+``` -->
 
-7. Upgrade Scheduling Service.
+6. Upgrade Scheduling Service.
 
 ```bash
 cpd-cli manage apply-scheduler \
@@ -325,7 +324,7 @@ cpd-cli manage apply-scheduler \
 --scheduler_ns=${PROJECT_SCHEDULING_SERVICE}
 ```
 
-8. Confirm Scheduling service pods are Running or Completed.
+7. Confirm Scheduling service pods are Running or Completed.
 
 ```bash
 oc get pods --namespace=${PROJECT_SCHEDULING_SERVICE}
