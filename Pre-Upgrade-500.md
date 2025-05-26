@@ -5,8 +5,8 @@
 1. Create folder to put all the information gather.
 
 ```bash
-mkdir -p /ibm/pre-upgrade-500
-cd /ibm/pre-upgrade-500
+mkdir -p /ibm/pre-upgrade-511
+cd /ibm/pre-upgrade-511
 ```
 
 **NOTE:**
@@ -60,6 +60,7 @@ for ns in ${PROJECT_CPFS_OPS} ${PROJECT_CPD_INST_OPERANDS}; do echo "==== Namesp
 ```bash
 oc get csv | grep ibm-cert-manager > cert-manager.txt
 ```
+
 ## 3. Validate CR status
 
 1. Run the cpd-cli manage login-to-ocp command to log in to the cluster.
