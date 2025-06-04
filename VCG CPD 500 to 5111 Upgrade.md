@@ -507,7 +507,7 @@ watch 'oc get WatsonAssistant wa -n cpd-operands --output jsonpath="{.status.pro
 cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
 ```
 
-6. Validate EBS Postgress Upgrade.
+6. Validate EBS Postgres Upgrade.
 
 * 6.1 Set an instance enviromental variable
 
@@ -541,7 +541,7 @@ oc get jobs -l slot=$INSTANCE
 oc get cronjob $INSTANCE-store-cronjob  -o yaml | grep postgres
 ```
 
-* 6.6 If wa-postgres-16-rw.cpd.svc points to old EDB Postgres cluster instead of EDB Postgres-16, then delete the cronjob with the following command. This helps the operator to create a new cronjob with latest config.
+* 6.6 If wa-postgres-16-rw.cpd.svc points to old EDB Postgres cluster instead of EDB Postgres-16, then delete the cronjob with the following command. This helps the operator to create a new cronjob with the latest config.
 
 ```bash
 oc delete cronjob $INSTANCE-store-cronjob
@@ -549,7 +549,7 @@ oc delete cronjob $INSTANCE-store-cronjob
 
 * 6.6 Login to IBM Cloud Pak for Data console.
 
-* 6.7 Test the upgradation by sending a message to one of the old instances:
+* 6.7 Test the upgrade by sending a message to one of the old instances:
 
     * Click Launch tool and click one of the watsonx Assistant service instances.
     * Type a message in the preview chat window to trigger the actions that are defined for the watsonx Assistant before upgrade.
