@@ -369,8 +369,7 @@ cpd-cli manage setup-instance \
 --release=${VERSION} \
 --license_acceptance=true \
 --cpd_operator_ns=${PROJECT_CPD_INST_OPERATORS} \
---cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
---run_storage_tests=true
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
 ```
 
 3. Upgrade operators for services
@@ -382,10 +381,17 @@ cpd-cli manage apply-olm \
 --upgrade=true
 ```
 
-4. Confirm all the operators pods are Running or Completed.
+4. Confirm all the operators pods are Running or Completed and custom resources.
 
+* 4.1 Verify pods.
 ```bash
 oc get pods --namespace=${PROJECT_CPD_INST_OPERATORS}
+```
+
+* 4.2 Verify Custom Resources.
+
+```bash
+cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
 ```
 
 5. Upgrading CDP Services to 5.1.1.
@@ -535,11 +541,19 @@ oc get jobs -l slot=$INSTANCE
 oc get cronjob $INSTANCE-store-cronjob  -o yaml | grep postgres
 ```
 
-* 6.6 f wa-postgres-16-rw.cpd.svc points to old EDB Postgres cluster instead of EDB Postgres-16, then delete the cronjob with the following command. This helps the operator to create a new cronjob with latest config.
+* 6.6 If wa-postgres-16-rw.cpd.svc points to old EDB Postgres cluster instead of EDB Postgres-16, then delete the cronjob with the following command. This helps the operator to create a new cronjob with latest config.
 
 ```bash
 oc delete cronjob $INSTANCE-store-cronjob
 ```
+
+* 6.6 Login to IBM Cloud Pak for Data console.
+
+* 6.7 Test the upgradation by sending a message to one of the old instances:
+
+    * Click Launch tool and click one of the watsonx Assistant service instances.
+    * Type a message in the preview chat window to trigger the actions that are defined for the watsonx Assistant before upgrade.
+    * Check whether you received the expected response without training the watsonx Assistant again.
 
 7. Cleaning up resources.
 
