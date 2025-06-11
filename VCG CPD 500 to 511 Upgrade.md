@@ -430,7 +430,7 @@ oc logs wd-discovery-operator-f4bd9688b-qg2j6 -n ${PROJECT_CPD_INST_OPERATORS}
 
 * 5.2.3 Review the progress of the update.
 ```bash
-watch 'oc get WatsonDiscovery wd -n cpd-operands --output jsonpath="{.status.progress} {.status.componentStatus.deployed} {.status.componentStatus.verified}"'
+watch 'oc get WatsonDiscovery wd -n ${PROJECT_CPD_INST_OPERANDS} --output jsonpath="{.status.progress} {.status.componentStatus.deployed} {.status.componentStatus.verified}"'
 ```
 
 * 5.3 Validate the upgrade.
@@ -491,11 +491,20 @@ ibm-watson-assistant-operator-catalog-xcm6x                       1/1     Runnin
 
 ```bash
 oc logs ibm-watson-assistant-operator-64f579c54-c2gtl -n ${PROJECT_CPD_INST_OPERATORS}
+
+OR
+
+oc exec -it <watson-assistant-pod name> -n ${PROJECT_CPD_INST_OPERATORS} sh
+```
+* 5.6.3 When you connect to the pod:
+
+```bash
+tail -f watsonassistant.wa.log
 ```
 
-* 5.6.3 Review the progress of the update.
+* 5.6.4 Review the progress of the update.
 ```bash
-watch 'oc get WatsonAssistant wa -n cpd-operands --output jsonpath="{.status.progress} {.status.componentStatus.deployed} {.status.componentStatus.verified}"'
+watch 'oc get WatsonAssistant wa -n ${PROJECT_CPD_INST_OPERANDS} --output jsonpath="{.status.progress} {.status.componentStatus.deployed} {.status.componentStatus.verified}"'
 ```
 
 * 5.7 Validate the upgrade.
