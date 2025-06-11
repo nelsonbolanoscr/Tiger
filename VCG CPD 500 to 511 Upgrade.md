@@ -198,10 +198,7 @@ oc get mcp
 * 2.1 Login Bastion node and log in to OCP cluster. Ensure `cli-cpd`command-line interface is installed properly.
 
 ```bash
-cpd-cli manage login-to-ocp \
---username=${OCP_USERNAME} \
---password=${OCP_PASSWORD} \
---server=${OCP_URL}
+${CPDM_OC_LOGIN}
 ```
 
 * 2.2 Review Services are in `READY` status.
