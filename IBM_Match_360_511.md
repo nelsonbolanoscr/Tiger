@@ -35,7 +35,6 @@ cpd-cli manage apply-cr \
 --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
 --block_storage_class=${STG_CLASS_BLOCK} \
 --file_storage_class=${STG_CLASS_FILE} \
---param-file=/tmp/work/install-options.yml \
 --license_acceptance=true
 ```
 
@@ -46,3 +45,32 @@ cpd-cli manage get-cr-status \
 --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
 --components=match360
 ```
+
+# 2. Install Hotfix
+
+1. Apply patch:
+
+```bash
+oc patch mdm mdm-cr --type=merge -p '{"spec":{"image_digests":{"mdm_configuration":"sha256:fdcea573b9fbc1a8107d303d7df2061a566990461ef880b33c5af2f3c33e6c8d","mdm_data":"sha256:64ef6e1ecb5780c3628c7f4b6bbb80beb1af72f9b14b10bf9a34da079256078c","mdm_matching":"sha256:5e43cebb400bdeecc0914ad92e7a49c3f7dbe8847535feaa1506f264ba62dac"}}}' 
+ 
+ oc patch mdm mdm-cr --type=merge -p '{"spec":{"mdm_data":{"spark":{"image": {"tag":"sha256:f7fc1b38363e2b7b0df178fac566441e938de17951ca87412bf335d9aec00eed" }}}}}'
+```
+
+2. Monitor status IBM Match 360 operator reconcilation.
+
+```bash
+oc get mdm mdm-cr -n ${PROJECT_CPD_INST_OPERANDS}
+```
+
+3.  Update mdm operator configmap.
+
+- 3.1 Capture `mdm-instance-id` value
+
+```bash
+oc get mdm mdm-cr -n ${PROJECT_CPD_INST_OPERANDS}
+```
+
+- 3.2 Patch configmap.
+
+```bash
+oc label cm mdm-operator-<mdm-instance-id> icpdsupport/addOnId=mdm -n ${PROJECT_CPD_INST_OPERANDS} 
