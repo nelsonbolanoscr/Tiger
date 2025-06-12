@@ -3,7 +3,46 @@
 ## IBM Documentation
 * [IBM Match 360](https://www.ibm.com/docs/en/software-hub/5.1.x?topic=services-match-360)
 
-## 1. Install Instuctions
+## 1. Health Check
+
+1. General OCP
+
+```bash
+oc get nodes,mcp,co > ocp_status.txt
+oc version > oc_version.txt
+oc get pods -A > pod_list.txt
+oc describe nodes > nodes_desc.txt
+```
+
+2. Validate Cluster, Nodes, Operands and Operators
+
+```bash
+cpd-cli health runcommand \
+--commands=cluster,nodes,operands,operators \
+--control_plane_ns=${PROJECT_CPD_INST_OPERANDS} \
+--log-level=debug \
+--operator_ns=${PROJECT_CPD_INST_OPERATORS} \
+--save \
+--verbose
+```
+
+3. Storage status.
+
+```bash
+# Get more details of the ocs cluster
+
+oc describe cephcluster ocs-storagecluster-cephcluster -n openshift-storage > odf-status.txt
+
+# Verify that the provisioner was created and that the corresponding daemon sets were created by:
+
+oc get all -n openshift-local-storage > local-storage.txt
+
+# Verify the created storage class:
+
+oc get sc
+```
+
+## 2. Install Instuctions
 
 1. Verify the `cpd_vars.sh` and load it.
 
@@ -46,7 +85,7 @@ cpd-cli manage get-cr-status \
 --components=match360
 ```
 
-# 2. Install Hotfix
+## 3. Install Hotfix
 
 1. Apply patch:
 
