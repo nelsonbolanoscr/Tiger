@@ -14,7 +14,13 @@ oc get pods -A > pod_list.txt
 oc describe nodes > nodes_desc.txt
 ```
 
-2. Validate Cluster, Nodes, Operands and Operators
+2. Review Custom Resources status.
+
+```bash
+cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} > cr_status.txt
+```
+
+3. Validate Cluster, Nodes, Operands and Operators
 
 ```bash
 cpd-cli health runcommand \
@@ -26,7 +32,7 @@ cpd-cli health runcommand \
 --verbose
 ```
 
-3. Storage status.
+4. Storage status.
 
 ```bash
 # Get more details of the ocs cluster
