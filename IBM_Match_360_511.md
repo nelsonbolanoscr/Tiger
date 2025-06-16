@@ -77,7 +77,7 @@ cpd-cli manage apply-olm \
 
 4. Create the Custom Resource for IBM Match 360.
 
-* 4.1 Create the install-options.yml in the cpd-cli work directory, example: `cpd-cli-workspace/olm-utils-workspace/work`.
+* 4.1 Create the `install-options.yml` in the cpd-cli work directory, example: `cpd-cli-workspace/olm-utils-workspace/work`.
 
 ```bash
 ################################################################################
@@ -120,7 +120,7 @@ oc patch mdm mdm-cr --type=merge -p '{
     "image_digests": {
       "mdm_configuration": "sha256:fdcea573b9fbc1a8107d303d7df2061a566990461ef880b33c5af2f3c33e6c8d",
       "mdm_data": "sha256:64ef6e1ecb5780c3628c7f4b6bbb80beb1af72f9b14b10bf9a34da079256078c",
-      "mdm_matching": "sha256:5e43cebb400bdeecc0914ad92e7a49c3f7dbe8847535feaa1506f264ba62dac"
+      "mdm_matching": "sha256:5e43cebb400bdeecc0914ad92e7a49c3f7dbe8847535feaa1506f264baa62dac"
     },
     "mdm_data": {
       "spark": {
