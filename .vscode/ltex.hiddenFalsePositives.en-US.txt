@@ -1,0 +1,1 @@
+{"rule":"CD_NN","sentence":"^\\QIBM Match 360 5.1.1 patch - Multiple fixes for IBM Match 360\nApply patch.\\E$"}

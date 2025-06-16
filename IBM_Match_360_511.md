@@ -50,6 +50,10 @@ oc get sc
 
 ## 2. Install Instuctions
 
+> #### Note:
+> CCS should be in **Ready** state before starting the installation of this service.
+
+
 1. Verify the `cpd_vars.sh` and load it.
 
 ```bash
@@ -73,6 +77,19 @@ cpd-cli manage apply-olm \
 
 4. Create the Custom Resource for IBM Match 360.
 
+* 4.1 Create the install-options.yml in the cpd-cli work directory, example: `cpd-cli-workspace/olm-utils-workspace/work`.
+
+```bash
+################################################################################
+# IBM Match 360 with Watson parameters
+################################################################################
+match360_scale_config: medium
+#match360_onboard_timeout: 300
+#match360_ccs_http_timeout: 2000
+```
+
+* 4.2 Apply the Custom Resoruce.
+
 ```bash
 cpd-cli manage apply-cr \
 --components=match360 \
@@ -80,6 +97,7 @@ cpd-cli manage apply-cr \
 --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
 --block_storage_class=${STG_CLASS_BLOCK} \
 --file_storage_class=${STG_CLASS_FILE} \
+--param-file=/tmp/work/install-options.yml \
 --license_acceptance=true
 ```
 
@@ -93,7 +111,8 @@ cpd-cli manage get-cr-status \
 
 ## 3. Install Hotfix
 
-1. Apply patch:
+### IBM Match 360 5.1.1 patch - Multiple fixes for IBM Match 360
+1. Apply patch.
 
 ```bash
 oc patch mdm mdm-cr --type=merge -p '{"spec":{"image_digests":{"mdm_configuration":"sha256:fdcea573b9fbc1a8107d303d7df2061a566990461ef880b33c5af2f3c33e6c8d","mdm_data":"sha256:64ef6e1ecb5780c3628c7f4b6bbb80beb1af72f9b14b10bf9a34da079256078c","mdm_matching":"sha256:5e43cebb400bdeecc0914ad92e7a49c3f7dbe8847535feaa1506f264ba62dac"}}}' 
@@ -118,4 +137,19 @@ oc get mdm mdm-cr -n ${PROJECT_CPD_INST_OPERANDS}
 - 3.2 Patch configmap.
 
 ```bash
-oc label cm mdm-operator-<mdm-instance-id> icpdsupport/addOnId=mdm -n ${PROJECT_CPD_INST_OPERANDS} 
+oc label cm mdm-operator-<mdm-instance-id> icpdsupport/addOnId=mdm -n ${PROJECT_CPD_INST_OPERANDS}
+```
+
+<!-- ### IBM Match 360 5.1.1 - Delete/Reject flow fails with error Draft Version doesn't exist
+
+1. Apply patch.
+
+```bash
+oc patch mdm mdm-cr --type=merge -p '{"spec":{"mdm_model":{"image": "tag":"sha256:a064f7491263488133beb496b4c09e2796d6cf155ed4efb70185ca6035dfbfed"}}}}' -n ${PROJECT_CPD_INSTANCE}
+```
+
+2. Monitor status IBM Match 360 operator reconcilation.
+
+```bash
+oc get mdm mdm-cr -n ${PROJECT_CPD_INST_OPERANDS}
+``` -->
