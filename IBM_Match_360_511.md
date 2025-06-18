@@ -88,7 +88,7 @@ match360_scale_config: medium
 #match360_ccs_http_timeout: 2000
 ```
 
-* 4.2 Apply the Custom Resoruce.
+* 4.2 Apply the Custom Resource.
 
 ```bash
 cpd-cli manage apply-cr \
