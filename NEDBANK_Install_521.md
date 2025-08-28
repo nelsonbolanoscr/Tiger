@@ -21,11 +21,29 @@ wget https://github.com/IBM/cpd-cli/releases/download/v14.2.1/cpd-cli-s390x-EE-1
 
 2. Install the tool.
 
+* 2.1 Untar content.
 ```bash
-tar xvf cpd-cli-linux-EE-14.1.1.tgz
-mv cpd-cli-linux-EE-14.1.1-1650/* .
-rm -rf cpd-cli-linux-EE-14.1.1-1650
+tar xvf cpd-cli-s390x-EE-14.2.1.tgz *Ask*
 ```
+ * 2.2 Make the cpd-cli executable from any directory.
+
+ ```bash
+ vi ~/.bashrc
+ ```
+
+ Add the following line at the bottom of the file.
+
+ ```bash
+ export PATH=<fully-qualified-path-to-the-cpd-cli>:$PATH
+ ```
+
+ * 2.3 Login back to the shell.
+
+ * 2.4 Test the cpd-cli tool.
+
+ ```bash
+ cpd-cli version
+ ```
 
 3. Install cert-management operator using web client procedure.
 
