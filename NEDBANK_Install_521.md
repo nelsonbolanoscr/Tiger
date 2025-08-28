@@ -9,8 +9,8 @@
 
 ```bash
 export CPD521_WORKSPACE=/ibm/cpd/521
-mkdir -p ${CPD511_WORKSPACE}
-cd ${CPD511_WORKSPACE}
+mkdir -p ${CPD521_WORKSPACE}
+cd ${CPD521_WORKSPACE}
 ``` 
 
 * 1.2 Download the cpd-cli for 5.2.1.
