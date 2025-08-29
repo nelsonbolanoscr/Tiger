@@ -3,7 +3,10 @@
 ## 1. Set up client workstation
 
 ### Prepare the client workstation
-1. Prepare a RHEL 9 machine with internet
+1. Prepare a RHEL 9 machine with internet.
+
+**NOTE:**
+<br> The following instruction works to update the current version of `cpd-cli`.
 
 * 1.1 Create a directory for cpd-cli utility.
 
@@ -387,26 +390,25 @@ oc patch kubeletconfig ${KUBELET_CONFIG} \
 ```bash
 cpd-cli manage apply-db2-kubelet
 ```
+* 6.4 Specifying the privileges that Db2U runs with
+
+Eleveted Privileges.
+
+```
+oc apply -f - <<EOF
+apiVersion: v1
+data:
+  DB2U_RUN_WITH_LIMITED_PRIVS: "false"
+kind: ConfigMap
+metadata:
+  name: db2u-product-cm
+  namespace: ${PROJECT_CPD_INST_OPERATORS}
+EOF
+```
 
 ## 3. Prepare to install
 
-1. Checking the health of your cluster.
-
-```bash
-cpd-cli health cluster
-```
-
-```bash
-cpd-cli health nodes
-```
-
-```bash
-cpd-cli health network-performance \
---verbose \
---save
-```
-
-2. Manually creating projects (namespaces) for an instance.
+1. Manually creating projects (namespaces) for an instance.
 
 ```bash
 oc new-project ${PROJECT_CPD_INST_OPERATORS}
@@ -416,7 +418,7 @@ oc new-project ${PROJECT_CPD_INST_OPERATORS}
 oc new-project ${PROJECT_CPD_INST_OPERANDS}
 ```
 
-3. Applying the required permissions by running the authorize-instance-topology command
+2. Applying the required permissions by running the authorize-instance-topology command
 
 ```bash
 cpd-cli manage authorize-instance-topology \
@@ -493,8 +495,23 @@ cpd-cli manage apply-privileged-monitoring-service \
 --cpd_operator_ns=${PROJECT_CPD_INST_OPERATORS} \
 --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
 ```
+2. Installing the IBM Software Hub configuration admission controller webhook
 
-2. Applying Entitlement.
+* 2.1 Install the configuration admission controller webhook.
+
+```bash
+cpd-cli manage install-cpd-config-ac \
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
+```
+
+* 2.2 Enable the configuration admission controller webhook.
+
+```bash
+cpd-cli manage enable-cpd-config-ac \
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
+```
+
+3. Applying Entitlement.
 
 ```bash
 cpd-cli manage apply-entitlement \
@@ -504,304 +521,9 @@ cpd-cli manage apply-entitlement \
 
 ## 6. Install Db2 Service.
 
-1. Setting up dedicated nodes
+1. Installing the service
 
-* 1.1 Retrieve the name of the worker node that you want to dedicate to Db2
-
-```bash
-oc get nodes
-```
-
-* 1.2 Edit the configmap to add the toleration for the custom taint.
-
-```bash
-oc edit configmap rook-ceph-operator-config -n openshift-storage
-```
-
-* 1.3 Check the configmap to verify that the toleration has been added.
-
-```bash
-oc get configmap rook-ceph-operator-config -n openshift-storage -o yaml
-```
-
-Example:
-
-```bash
-apiVersion: v1
-data:
-[...]
-  CSI_PLUGIN_TOLERATIONS: |
-    - key: nodetype
-      operator: Equal
-      value: infra
-      effect: NoSchedule
-    - key: node.ocs.openshift.io/storage
-      operator: Equal
-      value: "true"
-      effect: NoSchedule
-[...]
-kind: ConfigMap
-metadata:
-[...]
-```
-
-* 1.4 Restart the rook-ceph-operator if the csi-cephfsplugin-* and csi-rbdplugin-* pods fail to come up on their own on the infra nodes.
-
-```bash
-oc delete -n openshift-storage pod <name of the rook_ceph_operator pod>
-```
-
-* 1.5 Taint the node with the NoSchedule effect and safely evict all of the pods from that node.
-
-```bash
-oc adm taint node node_name icp4data=dedicated_specifier:NoSchedule --overwrite
-```
-```bash
-oc adm drain <node_name>
-```
-```bash
-oc adm uncordon <node_name>
-```
-
-* 1.6 Verify that the csi-cephfsplugin-* and csi-rbdplugin-* pods are running on the Tainted nodes.
-
-```bash
-oc get pods -A --field-selector spec.nodeName=<Tainted Node>
-```
-
-* 1.7 Label the node.
-
-```bash
-oc label node node_name icp4data=dedicated_specifier --overwrite
-```
-
-* 1.8 Verify that the node is labeled.
-
-```bash
-oc get node --show-labels
-```
-
-2. Configuring database storage for Db2.
-
-Pending
-
-3. Creating Custom SCC.
-
-* 3.1 Manually 
-
-* 3.1.1 Set the following environment variables
-
-* 3.1.1.1 Set SCC_NAME to the name that you want to use for the SCC
-
-```bash
-export SCC_NAME=<scc-name>
-```
-* 3.1.1.2 Set SERVICE_ACCOUNT to the name of the service account that you want to bind the SCC to.
-
- ```bash
- export SERVICE_ACCOUNT=<sa-name>
- ```
-
-* 3.1.1.3 Set ROLE_NAME to the name of the role that will be referenced by the role binding.
-
- ```bash
-export ROLE_NAME=<role-name>
-```
-
-* 3.1.1.4 Set ROLEBINDING_NAME to the name of the role binding that will be used to bind the service account to the SCC.
-
-```bash
-export ROLEBINDING_NAME=<role-name>
-```
-
-* 3.1.1.5 Set PROJECT_CPD_INST_OPERANDS to the project namespace in which the Db2 service is installed. If `cpd_vars.sh` is source, just verify the variable is loaded using `echo` command.
-
-```bash
-export PROJECT_CPD_INST_OPERANDS=<namespace>
-```
-
-* 3.1.2 Create the service account.
-
-```bash
-cat <<EOF |oc apply -f -
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: ${SERVICE_ACCOUNT}
-  namespace: ${PROJECT_CPD_INST_OPERANDS}
-EOF
-```
-
-* 3.1.3 Create the role.
-
-```bash
-cat <<EOF |oc apply -f -
-apiVersion: rbac.authorization.k8s.io/v1
-kind: Role
-metadata:
-  name: ${ROLE_NAME}
-  namespace: ${PROJECT_CPD_INST_OPERANDS}
-rules:
-- apiGroups:
-  - ""
-  resources:
-  - endpoints
-  - pods
-  verbs:
-  - get
-  - patch
-  - update
-- apiGroups:
-  - apps
-  resources:
-  - StatefulSets
-  - deployments
-  - replicasets
-  verbs:
-  - get
-  - list
-- apiGroups:
-  - ""
-  resources:
-  - configmaps
-  verbs:
-  - get
-  - patch
-  - watch
-  - list
-  - update
-- apiGroups:
-  - ""
-  resources:
-  - secrets
-  verbs:
-  - get
-  - create
-  - update
-- apiGroups:
-  - db2u.databases.ibm.com
-  resources:
-  - recipes
-  verbs:
-  - watch
-  - get
-  - update
-  - create
-  - patch
-  - list
-  - delete
-- apiGroups:
-  - db2u.databases.ibm.com
-  resources:
-  - buckets
-  verbs:
-  - patch
-- apiGroups:
-  - db2u.databases.ibm.com
-  resources:
-  - backups
-  verbs:
-  - patch
-  - delete
-  - list
-- apiGroups:
-  - db2u.databases.ibm.com
-  resources:
-  - formations
-  verbs:
-  - get
-- apiGroups:
-  - ""
-  resources:
-  - pods/exec
-  verbs:
-  - create
-- apiGroups:
-  - ""
-  resources:
-  - pods
-  verbs:
-  - watch
-  - list
-  - get
-- apiGroups:
-  - ""
-  resources:
-  - services
-  verbs:
-  - watch
-  - list
-  - get
-EOF
-```
-
-* 3.1.4 Create the role binding
-
-```bash
-cat <<EOF |oc apply -f -
-apiVersion: rbac.authorization.k8s.io/v1
-kind: RoleBinding
-metadata:
-  name: ${ROLEBINDING_NAME}
-  namespace: ${PROJECT_CPD_INST_OPERANDS}
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: Role
-  name: ${ROLE_NAME}
-subjects:
-- kind: ServiceAccount
-  name: ${SERVICE_ACCOUNT}
-  namespace: ${PROJECT_CPD_INST_OPERANDS}
-EOF
-```
-
-* 3.1.5 Create the SCC
-
-Need to ask here.
-
-* 3.2 Specifying a custom service account, SCC, role, and role binding before deploying Db2
-
-* 3.2.1 Set the Db2 operator replica to 0 by running the following command.
-
-```bash
-oc scale deployment ibm-db2oltp-cp4d-operator-controller-manager --replicas=0 -n ${PROJECT_CPD_INST_OPERATORS}
-```
-
-* 3.2.2 Open the db2oltp-json-cm ConfigMap object in edit mode.
-
-```bash
-oc edit cm db2oltp-json-cm -n ${PROJECT_CPD_INST_OPERANDS}
-```
-
-Type /service-account to locate the service-account section of the ConfigMap.
-
-Under the ibm-db2oltp.json data option, change the service account name from db2u to the name of the custom service account that you manually created earlier, step `3.1.1.2 Set SERVICE_ACCOUNT to the name of the service account that you want to bind the SCC to.`
-
-Save the change and exit the ConfigMap.
-
-* 3.2.3 Delete the zen-database-core pod in order for the ConfigMap changes to be re-mounted to the volume.
-
-```bash
-oc delete po $(oc get po -n ${PROJECT_CPD_INST_OPERANDS} | grep zen-database-core | awk {'print $1'}) -n ${PROJECT_CPD_INST_OPERANDS}
-```
-
-* 3.2.4 Deploy the Db2 instance.
-
-The link is broken atm.
-
-**NOTE:**
-<br> **Important:** You must deploy your instance before scaling up the operator. Scaling the operator causes your changes to be overwritten.
-
-
-* 3.2.5 Set the Db2 operator replica to 1 by running the following command.
-
-```bash
-oc scale deployment ibm-db2oltp-cp4d-operator-controller-manager --replicas=1 -n ${PROJECT_CPD_INST_OPERATORS}
-```
-
-4. Installing the service
-
-* 4.1 Run the following command to create the required OLM objects for Db2 in the operators project for the instance.
+* 1.1 Run the following command to create the required OLM objects for Db2 in the operators project for the instance.
 
 ```bash
 cpd-cli manage apply-olm \
@@ -810,7 +532,7 @@ cpd-cli manage apply-olm \
 --components=db2oltp
 ```
 
-* 4.2 Create the custom resource for Db2.
+* 1.2 Create the custom resource for Db2.
 
 ```bash
 cpd-cli manage apply-cr \
@@ -820,14 +542,10 @@ cpd-cli manage apply-cr \
 --license_acceptance=true
 ```
 
-* 4.3 Confirm that the custom resource status is Completed.
+* 1.3 Confirm that the custom resource status is Completed.
 
 ```bash
 cpd-cli manage get-cr-status \
 --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
 --components=db2oltp
 ```
-
-5. Adding privileges to deploy Db2 with the web console.
-
-Pending
