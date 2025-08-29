@@ -37,7 +37,7 @@ tar xvf cpd-cli-s390x-EE-14.2.1.tgz *Ask*
  export PATH=<fully-qualified-path-to-the-cpd-cli>:$PATH
  ```
 
- * 2.3 Login back to the shell.
+ * 2.3 After editing the `.bashrc` file, in order to load this change, we need to close the current session and login back to the terminal, or do `bash`.
 
  * 2.4 Test the cpd-cli tool.
 
@@ -47,11 +47,56 @@ tar xvf cpd-cli-s390x-EE-14.2.1.tgz *Ask*
 
 3. Install cert-management operator using web client procedure.
 
-```
+* 3.1 Prerequisites.
+
+    * 3.1.1 cluster-admin privileges.
+    * 3.1.2 Acess Openshift Container Platform web console.
+
+* 3.2 Procedure.
+
+    * 3.2.1 Log in to the OpenShift Container Platform web console.
+    * 3.2.2 Navigate to **Operators** > **OperatorHub**.
+    * 3.2.3 Enter **cert-manager Operator for Red Hat OpenShift** into the filter box.
+    * 3.2.4 Select the **cert-manager Operator for Red Hat OpenShift**.
+    * 3.2.5 Select the cert-manager Operator for Red Hat OpenShift version from **Version** drop-down list, and click Install.
+    * 3.2.6 On the **Install Operator** page:
+        * i. Update the **Update channel**, if necessary. The channel defaults to **stable-v1**, which installs the latest stable release of the cert-manager Operator for Red Hat OpenShift. 
+        * ii.  Choose the **Installed Namespace** for the Operator. The default Operator namespace is `cert-manager-operator`.
+
+            If the cert-manager-operator namespace does not exist, it is created for you.
+        * iii. Select an **Update approval** strategy.
+            * The **Automatic** strategy allows Operator Lifecycle Manager (OLM) to automatically update the Operator when a new version is available.
+            * The **Manual** strategy requires a user with appropriate credentials to approve the Operator update. 
+        * iv. Click **Install**
+
+* 3.3 Verification.
+
+    * 3.3.1 Navigate to **Operators** > **Installed Operators**.
+    * 3.3.2 Verify that **cert-manager Operator for Red Hat OpenShift** is listed with a Status of **Succeeded** in the `cert-manager-operator` namespace.
+    * 3.3.3 Verify that cert-manager pods are up and running by entering the following command.
+    ```bash
+    oc get pods -n cert-manager
+
+    Example output:
+    NAME                                       READY   STATUS    RESTARTS   AGE
+    cert-manager-bd7fbb9fc-wvbbt               1/1     Running   0          3m39s
+    cert-manager-cainjector-56cc5f9868-7g9z7   1/1     Running   0          4m5s
+    cert-manager-webhook-d4f79d7f7-9dg9w       1/1     Running   0          4m9s
+    ```
+
+    You can use the cert-manager Operator for Red Hat OpenShift only after cert-manager pods are up and running.
+
+* 3.4 Link of the documentation for refence.
 https://docs.redhat.com/en/documentation/openshift_container_platform/4.15/html/security_and_compliance/cert-manager-operator-for-red-hat-openshift#cert-manager-operator-install
-```
+
 
 4. Obtaining IBM Entitlement API key.
+
+* 4.1 Log in to [Container software library on My IBM](https://myibm.ibm.com/products-services/containerlibrary) with the IBMid and password that are associated with the entitled software.
+
+* 4.2 On the **Entitlement** keys tab, select **Copy** to copy the entitlement key to the clipboard.
+
+* 4.3 Save the API key in a text file.
 
 5. Determining components to install.
 
@@ -261,6 +306,86 @@ cpd-cli manage apply-scheduler \
 --release=${VERSION} \
 --license_acceptance=true \
 --scheduler_ns=${PROJECT_SCHEDULING_SERVICE}
+```
+
+6. Changing required node settings.
+
+* 6.1 Load Balancer Timeout.
+
+The minimum recommended timeout is:
+
+    Client timeout: 300s (5m)
+    Server timeout: 300s (5m)
+
+
+```bash
+export TIMEOUT_SETTING=<timeout>
+```
+
+To increase the timeout client setting.
+```bash
+sed -i -e "/timeout client/s/ [0-9].*/ ${TIMEOUT_SETTING}/" /etc/haproxy/haproxy.cfg
+```
+
+To increase the timeout server setting.
+```bash
+sed -i -e "/timeout server/s/ [0-9].*/ ${TIMEOUT_SETTING}/" /etc/haproxy/haproxy.cfg
+```
+
+Run the following command to apply the changes that you made to the HAProxy configuration.
+```bash
+systemctl restart haproxy
+```
+
+* 6.2 Changing the process IDs limit.
+
+```bash
+oc get kubeletconfig
+```
+
+Take the appropriate action based on whether the command returns the name of a kubeletconfig.
+
+The command returns the name of a kubeletconfig.
+
+```bash
+export KUBELET_CONFIG=<kubeletconfig-name>
+```
+
+```bash
+oc patch kubeletconfig ${KUBELET_CONFIG} \
+--type=merge \
+--patch='{"spec":{"kubeletConfig":{"podPidsLimit":16384}}}'
+```
+
+The command returns an empty response
+
+```bash
+oc apply -f - << EOF
+apiVersion: machineconfiguration.openshift.io/v1
+kind: KubeletConfig
+metadata:
+  name: cpd-kubeletconfig
+spec:
+  kubeletConfig:
+    podPidsLimit: 16384
+  machineConfigPoolSelector:
+    matchExpressions:
+    - key: pools.operator.machineconfiguration.openshift.io/worker
+      operator: Exists
+EOF
+```
+* 6.3 Changing kernel parameter settings.
+
+```bash
+oc get kubeletconfig
+```
+```bash
+oc patch kubeletconfig ${KUBELET_CONFIG} \
+--type=merge \
+--patch='{"spec":{"kubeletConfig":{"allowedUnsafeSysctls":["kernel.msg*", "kernel.shm*", "kernel.sem"]}}}'
+```
+```bash
+cpd-cli manage apply-db2-kubelet
 ```
 
 ## 3. Prepare to install
@@ -674,91 +799,9 @@ The link is broken atm.
 oc scale deployment ibm-db2oltp-cp4d-operator-controller-manager --replicas=1 -n ${PROJECT_CPD_INST_OPERATORS}
 ```
 
-4. Load Balancer Timeout.
+4. Installing the service
 
-The minimum recommended timeout is:
-
-    Client timeout: 300s (5m)
-    Server timeout: 300s (5m)
-
-
-```bash
-export TIMEOUT_SETTING=<timeout>
-```
-
-To increase the timeout client setting.
-```bash
-sed -i -e "/timeout client/s/ [0-9].*/ ${TIMEOUT_SETTING}/" /etc/haproxy/haproxy.cfg
-```
-
-To increase the timeout server setting.
-```bash
-sed -i -e "/timeout server/s/ [0-9].*/ ${TIMEOUT_SETTING}/" /etc/haproxy/haproxy.cfg
-```
-
-Run the following command to apply the changes that you made to the HAProxy configuration.
-```bash
-systemctl restart haproxy
-```
-
-5. Changing the process IDs limit.
-
-```bash
-oc get kubeletconfig
-```
-
-Take the appropriate action based on whether the command returns the name of a kubeletconfig.
-
-The command returns the name of a kubeletconfig.
-
-```bash
-export KUBELET_CONFIG=<kubeletconfig-name>
-```
-
-```bash
-oc patch kubeletconfig ${KUBELET_CONFIG} \
---type=merge \
---patch='{"spec":{"kubeletConfig":{"podPidsLimit":16384}}}'
-```
-
-The command returns an empty response
-
-```bash
-oc apply -f - << EOF
-apiVersion: machineconfiguration.openshift.io/v1
-kind: KubeletConfig
-metadata:
-  name: cpd-kubeletconfig
-spec:
-  kubeletConfig:
-    podPidsLimit: 16384
-  machineConfigPoolSelector:
-    matchExpressions:
-    - key: pools.operator.machineconfiguration.openshift.io/worker
-      operator: Exists
-EOF
-```
-6. Changing kernel parameter settings.
-
-```bash
-oc get kubeletconfig
-```
-```bash
-oc patch kubeletconfig ${KUBELET_CONFIG} \
---type=merge \
---patch='{"spec":{"kubeletConfig":{"allowedUnsafeSysctls":["kernel.msg*", "kernel.shm*", "kernel.sem"]}}}'
-```
-```bash
-cpd-cli manage apply-db2-kubelet
-```
-
-7. Changing Power settings.
-
-Pending
-
-8. Installing the service
-
-* 8.1 Run the following command to create the required OLM objects for Db2 in the operators project for the instance.
+* 4.1 Run the following command to create the required OLM objects for Db2 in the operators project for the instance.
 
 ```bash
 cpd-cli manage apply-olm \
@@ -767,7 +810,7 @@ cpd-cli manage apply-olm \
 --components=db2oltp
 ```
 
-* 8.2 Create the custom resource for Db2.
+* 4.2 Create the custom resource for Db2.
 
 ```bash
 cpd-cli manage apply-cr \
@@ -777,7 +820,7 @@ cpd-cli manage apply-cr \
 --license_acceptance=true
 ```
 
-* 8.3 Confirm that the custom resource status is Completed.
+* 4.3 Confirm that the custom resource status is Completed.
 
 ```bash
 cpd-cli manage get-cr-status \
@@ -785,6 +828,6 @@ cpd-cli manage get-cr-status \
 --components=db2oltp
 ```
 
-9. Adding privileges to deploy Db2 with the web console.
+5. Adding privileges to deploy Db2 with the web console.
 
 Pending
