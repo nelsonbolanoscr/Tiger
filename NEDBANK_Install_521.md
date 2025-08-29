@@ -87,7 +87,7 @@ tar xvf cpd-cli-s390x-EE-14.2.1.tgz *Ask*
     You can use the cert-manager Operator for Red Hat OpenShift only after cert-manager pods are up and running.
 
 * 3.4 Link of the documentation for refence.
-https://docs.redhat.com/en/documentation/openshift_container_platform/4.15/html/security_and_compliance/cert-manager-operator-for-red-hat-openshift#cert-manager-operator-install
+<br>https://docs.redhat.com/en/documentation/openshift_container_platform/4.15/html/security_and_compliance/cert-manager-operator-for-red-hat-openshift#cert-manager-operator-install
 
 
 4. Obtaining IBM Entitlement API key.
