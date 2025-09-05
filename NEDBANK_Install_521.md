@@ -452,8 +452,7 @@ cpd-cli manage setup-instance \
 --cpd_operator_ns=${PROJECT_CPD_INST_OPERATORS} \
 --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
 --block_storage_class=${STG_CLASS_BLOCK} \
---file_storage_class=${STG_CLASS_FILE} \
---run_storage_tests=true
+--file_storage_class=${STG_CLASS_FILE}
 ```
 
 3. Confirm that the status of the operands is Completed.
