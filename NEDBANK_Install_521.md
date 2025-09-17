@@ -388,7 +388,7 @@ oc patch kubeletconfig ${KUBELET_CONFIG} \
 --patch='{"spec":{"kubeletConfig":{"allowedUnsafeSysctls":["kernel.msg*", "kernel.shm*", "kernel.sem"]}}}'
 ```
 ```bash
-cpd-cli manage apply-db2-kubelet
+cpd-cli manage apply-db2-kubelet --self_managed=true
 ```
 * 6.4 Specifying the privileges that Db2U runs with
 
