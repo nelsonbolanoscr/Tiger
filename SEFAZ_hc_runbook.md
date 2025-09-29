@@ -146,7 +146,7 @@ cpd-cli health network-performance \
 
 ## Cleanup
 
-After running the health check, it is a good practice to  clean up the resources created during the health check.
+After running the health check, it is a good practice to clean up the resources created during the health check.
 
 1. Save the script as `cleanup.sh`.
 
