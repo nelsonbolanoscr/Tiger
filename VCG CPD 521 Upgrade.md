@@ -378,13 +378,40 @@ cpd-cli manage apply-cr \
 <!-- **NOTE:**
 <br>Review install-options.yml is configured properly for the service that it is going to be upgraded. -->
 
-* 5.2 Validate the upgrade.
+* 5.2 Review installation progress.
+
+* 5.2.1 Find the pod of the service.
+
+```bash
+oc get pods -n ${PROJECT_CPD_INST_OPERATORS} | grep -i discovery
+```
+
+The output should be something like this:
+
+```bash
+oc get pods -n ${PROJECT_CPD_INST_OPERATORS} | grep -i discovery
+ibm-watson-discovery-operator-catalog-nfzg7                       1/1     Running     0               4h31m
+wd-discovery-operator-f4bd9688b-qg2j6                             1/1     Running     1 (4h16m ago)   4h19m
+```
+
+* 5.2.2 Review logs of the pod:
+
+```bash
+oc logs wd-discovery-operator-f4bd9688b-qg2j6 -n ${PROJECT_CPD_INST_OPERATORS}
+```
+
+* 5.2.3 Review the progress of the update.
+```bash
+watch 'oc get WatsonDiscovery wd -n ${PROJECT_CPD_INST_OPERANDS} --output jsonpath="{.status.progress} {.status.componentStatus.deployed} {.status.componentStatus.verified}"'
+```
+
+* 5.3 Validate the upgrade.
 
 ```bash
 cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
 ```
 
-* 5.3 Upgrading Watson Assistant.
+* 5.4 Upgrading Watson Assistant.
 
 ```bash
 cpd-cli manage apply-cr \
@@ -403,7 +430,43 @@ https://github.ibm.com/PrivateCloud-analytics/CPD-Quality/issues/42297 -->
 <!-- **NOTE:**
 <br>Review install-options.yml is configured properly for the service that it is going to be upgraded. -->
 
-* 5.4 Validate the upgrade.
+* 5.5 Review installation progress.
+
+* 5.5.1 Find the pod of the service.
+
+```bash
+oc get pods -n ${PROJECT_CPD_INST_OPERATORS} | grep -i assistant
+```
+
+The output should be something like this:
+
+```bash
+oc get pods -n ${PROJECT_CPD_INST_OPERATORS} | grep -i assistant
+ibm-watson-assistant-operator-64f579c54-c2gtl                     1/1     Running     0               4h40m
+ibm-watson-assistant-operator-catalog-xcm6x                       1/1     Running     0               4h40m
+```
+
+* 5.5.2 Review logs of the pod:
+
+```bash
+oc logs ibm-watson-assistant-operator-64f579c54-c2gtl -n ${PROJECT_CPD_INST_OPERATORS}
+
+OR
+
+oc exec -it <watson-assistant-pod name> -n ${PROJECT_CPD_INST_OPERATORS} sh
+```
+* 5.5.3 When you connect to the pod:
+
+```bash
+tail -f watsonassistant.wa.log
+```
+
+* 5.5.4 Review the progress of the update.
+```bash
+watch 'oc get WatsonAssistant wa -n ${PROJECT_CPD_INST_OPERANDS} --output jsonpath="{.status.progress} {.status.componentStatus.deployed} {.status.componentStatus.verified}"'
+```
+
+* 5.6 Validate the upgrade.
 
 ```bash
 cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
