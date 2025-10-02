@@ -299,27 +299,7 @@ cpd-cli health runcommand \
 --verbose
 ```
 
-3. Network Performance.
-
-[network]: <> (IBM Entitled Registry)
-
-```bash
-cpd-cli health network-performance \
---log-level=debug \
---minbandwidth=350 \
---save \
---verbose
-```
-
-4. Network Connectivity.
-
-```bash
-cpd-cli health network-connectivity \
---control_plane_ns=${PROJECT_CPD_INST_OPERANDS} \
---save \
---verbose
-```
-5. Storage status.
+3. Storage status.
 
 ```bash
 # Get more details of the ocs cluster
@@ -335,7 +315,7 @@ oc get all -n openshift-local-storage > local-storage.txt
 oc get sc
 ```
 
-6. Storage performance.
+4. Storage performance.
 
 Create param.yaml, client have to replace values:
 - ocp URL
@@ -420,6 +400,27 @@ swrite_fileBlockSize: 512m,1g
 ```bash
 cpd-cli health storage-performance \
 --param <path of paramperf.yml file> \
+--save \
+--verbose
+```
+
+5. Network Connectivity.
+
+```bash
+cpd-cli health network-connectivity \
+--control_plane_ns=${PROJECT_CPD_INST_OPERANDS} \
+--save \
+--verbose
+```
+
+6. Network Performance.
+
+[network]: <> (IBM Entitled Registry)
+
+```bash
+cpd-cli health network-performance \
+--log-level=debug \
+--minbandwidth=350 \
 --save \
 --verbose
 ```
