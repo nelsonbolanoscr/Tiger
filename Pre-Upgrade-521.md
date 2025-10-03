@@ -213,7 +213,7 @@ serverless-operator.v1.35.0           Red Hat OpenShift Serverless   1.35.0    s
 Version 1.35 is the latest version
 
 3. IBM Cloud Pak foundational services CASE package should be available, if not, please download it from the following link:
-https://www.ibm.com/docs/en/software-hub/5.1.x?topic=ups-upgrading-red-hat-openshift-serverless-knative-eventing-1
+https://www.ibm.com/docs/en/software-hub/5.2.x?topic=ups-upgrading-red-hat-openshift-serverless-knative-eventing-1
 
 4. Verify IBM Events Operator version.
 
@@ -399,6 +399,8 @@ swrite_fileBlockSize: 512m,1g
 
 ```bash
 cpd-cli health storage-performance \
+--image-prefix=${PRIVATE_REGISTRY_LOCATION}/cpopen/cpd \
+--image-tag=${VERSION}.${IMAGE_ARCH} \
 --param <path of paramperf.yml file> \
 --save \
 --verbose
@@ -419,6 +421,8 @@ cpd-cli health network-connectivity \
 
 ```bash
 cpd-cli health network-performance \
+--image-prefix=${PRIVATE_REGISTRY_LOCATION}/cpopen/cpd \
+--image-tag=${VERSION}.${IMAGE_ARCH}
 --log-level=debug \
 --minbandwidth=350 \
 --save \
