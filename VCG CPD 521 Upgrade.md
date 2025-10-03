@@ -405,6 +405,10 @@ oc logs wd-discovery-operator-f4bd9688b-qg2j6 -n ${PROJECT_CPD_INST_OPERATORS}
 watch 'oc get WatsonDiscovery wd -n ${PROJECT_CPD_INST_OPERANDS} --output jsonpath="{.status.progress} {.status.componentStatus.deployed} {.status.componentStatus.verified}"'
 ```
 
+* 5.2.4 Apply OADP online restore hotfix.
+
+https://www.ibm.com/docs/en/software-hub/5.2.x?topic=setup-applying-hotfix-opensearch
+
 * 5.3 Validate the upgrade.
 
 ```bash
