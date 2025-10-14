@@ -222,6 +222,7 @@ cpd-cli manage setup-instance-topology \
 --release=${VERSION} \
 --cpd_operator_ns=ibm-knative-events \
 --cpd_instance_ns=knative-eventing \
+--block_storage_class=${STG_CLASS_BLOCK} \
 --license_acceptance=true
 ```
 
@@ -363,9 +364,15 @@ cpd-cli manage apply-olm \
 oc get pods --namespace=${PROJECT_CPD_INST_OPERATORS}
 ```
 
-5. Upgrading CDP Services to 5.2.1.
+5. Validate the upgrade.
 
-* 5.1 Upgrading Watson Discovery.
+```bash
+cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
+```
+
+6. Upgrading CDP Services to 5.2.1.
+
+* 6.1 Upgrading Watson Discovery.
 
 ```bash
 cpd-cli manage apply-cr \
@@ -378,9 +385,9 @@ cpd-cli manage apply-cr \
 <!-- **NOTE:**
 <br>Review install-options.yml is configured properly for the service that it is going to be upgraded. -->
 
-* 5.2 Review installation progress.
+* 6.2 Review installation progress.
 
-* 5.2.1 Find the pod of the service.
+* 6.2.1 Find the pod of the service.
 
 ```bash
 oc get pods -n ${PROJECT_CPD_INST_OPERATORS} | grep -i discovery
@@ -394,28 +401,28 @@ ibm-watson-discovery-operator-catalog-nfzg7                       1/1     Runnin
 wd-discovery-operator-f4bd9688b-qg2j6                             1/1     Running     1 (4h16m ago)   4h19m
 ```
 
-* 5.2.2 Review logs of the pod:
+* 6.2.2 Review logs of the pod:
 
 ```bash
 oc logs wd-discovery-operator-f4bd9688b-qg2j6 -n ${PROJECT_CPD_INST_OPERATORS}
 ```
 
-* 5.2.3 Review the progress of the update.
+* 6.2.3 Review the progress of the update.
 ```bash
 watch 'oc get WatsonDiscovery wd -n ${PROJECT_CPD_INST_OPERANDS} --output jsonpath="{.status.progress} {.status.componentStatus.deployed} {.status.componentStatus.verified}"'
 ```
 
-* 5.2.4 Apply OADP online restore hotfix.
+* 6.2.4 Apply OADP online restore hotfix.
 
 https://www.ibm.com/docs/en/software-hub/5.2.x?topic=setup-applying-hotfix-opensearch
 
-* 5.3 Validate the upgrade.
+* 6.3 Validate the upgrade.
 
 ```bash
 cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
 ```
 
-* 5.4 Upgrading Watson Assistant.
+* 6.4 Upgrading Watson Assistant.
 
 ```bash
 cpd-cli manage apply-cr \
@@ -434,9 +441,9 @@ https://github.ibm.com/PrivateCloud-analytics/CPD-Quality/issues/42297 -->
 <!-- **NOTE:**
 <br>Review install-options.yml is configured properly for the service that it is going to be upgraded. -->
 
-* 5.5 Review installation progress.
+* 6.5 Review installation progress.
 
-* 5.5.1 Find the pod of the service.
+* 6.5.1 Find the pod of the service.
 
 ```bash
 oc get pods -n ${PROJECT_CPD_INST_OPERATORS} | grep -i assistant
@@ -450,7 +457,7 @@ ibm-watson-assistant-operator-64f579c54-c2gtl                     1/1     Runnin
 ibm-watson-assistant-operator-catalog-xcm6x                       1/1     Running     0               4h40m
 ```
 
-* 5.5.2 Review logs of the pod:
+* 6.5.2 Review logs of the pod:
 
 ```bash
 oc logs ibm-watson-assistant-operator-64f579c54-c2gtl -n ${PROJECT_CPD_INST_OPERATORS}
@@ -459,24 +466,24 @@ OR
 
 oc exec -it <watson-assistant-pod name> -n ${PROJECT_CPD_INST_OPERATORS} sh
 ```
-* 5.5.3 When you connect to the pod:
+* 6.5.3 When you connect to the pod:
 
 ```bash
 tail -f watsonassistant.wa.log
 ```
 
-* 5.5.4 Review the progress of the update.
+* 6.5.4 Review the progress of the update.
 ```bash
 watch 'oc get WatsonAssistant wa -n ${PROJECT_CPD_INST_OPERANDS} --output jsonpath="{.status.progress} {.status.componentStatus.deployed} {.status.componentStatus.verified}"'
 ```
 
-* 5.6 Validate the upgrade.
+* 6.6 Validate the upgrade.
 
 ```bash
 cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
 ```
 
-6. Enable `zen-rsi-evictor-cron-job`.
+7. Enable `zen-rsi-evictor-cron-job`.
 
 ```bash
 oc patch CronJob zen-rsi-evictor-cron-job \
@@ -485,7 +492,7 @@ oc patch CronJob zen-rsi-evictor-cron-job \
 --patch='{"spec":{"suspend": false}}'
 ```
 
-7. Apply RSI patches.
+8. Apply RSI patches.
 
 ```bash
 cpd-cli manage apply-rsi-patches \
