@@ -513,11 +513,9 @@ export OADP_OPERATOR_NS=<oadp-operator-project>
 ```bash
 cpd-cli oadp install \
 --component=cpdbr-tenant \
---cpdbr-hooks-image-prefix=icr.io/cpopen/cpd \
---namespace=${OADP_OPERATOR_NS} \
+--cpdbr-hooks-image-prefix=${PRIVATE_REGISTRY_LOCATION} \
 --tenant-operator-namespace=${PROJECT_CPD_INST_OPERATORS} \
 --cpd-scheduler-namespace=${PROJECT_SCHEDULING_SERVICE} \
---skip-recipes=true \
 --upgrade=true \
 --log-level=debug \
 --verbose
