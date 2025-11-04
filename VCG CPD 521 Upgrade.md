@@ -238,6 +238,15 @@ cpd-cli manage deploy-knative-eventing \
 --upgrade=true
 ```
 
+Potential issue during `manage deploy-knative-eventing`.
+
+```
+Delete kafka-kafka pod
+knative-eventing-kafka-kafka-0
+knative-eventing-kafka-kafka-1
+knative-eventing-kafka-kafka-2
+```
+
 ### 2.2 Upgrading shared cluster components
 
 1. Run the cpd-cli manage login-to-ocp command to log in to the cluster.
@@ -276,7 +285,6 @@ oc get scheduling -A
 cpd-cli manage apply-cluster-components \
 --release=${VERSION} \
 --license_acceptance=true \
---cert_manager_ns=${PROJECT_CERT_MANAGER} \
 --licensing_ns=${PROJECT_LICENSE_SERVICE}
 ```
 
@@ -412,14 +420,18 @@ oc logs wd-discovery-operator-f4bd9688b-qg2j6 -n ${PROJECT_CPD_INST_OPERATORS}
 watch 'oc get WatsonDiscovery wd -n ${PROJECT_CPD_INST_OPERANDS} --output jsonpath="{.status.progress} {.status.componentStatus.deployed} {.status.componentStatus.verified}"'
 ```
 
-* 6.2.4 Apply OADP online restore hotfix.
-
-https://www.ibm.com/docs/en/software-hub/5.2.x?topic=setup-applying-hotfix-opensearch
-
 * 6.3 Validate the upgrade.
 
 ```bash
 cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
+```
+
+Potential issue related to opensearch pods.
+
+```bash
+oc patch cm wd-discovery-opensearch-client-config -n ${PROJECT_CPD_INST_OPERANDS} --patch='{"data": {"forceEphemeral": "true"}}'
+oc patch cm wd-discovery-opensearch-data-config -n ${PROJECT_CPD_INST_OPERANDS} --patch='{"data": {"forceEphemeral": "true"}}'
+oc patch cm wd-discovery-opensearch-master-config -n ${PROJECT_CPD_INST_OPERANDS} --patch='{"data": {"forceEphemeral": "true"}}'
 ```
 
 * 6.4 Upgrading Watson Assistant.
@@ -483,6 +495,12 @@ watch 'oc get WatsonAssistant wa -n ${PROJECT_CPD_INST_OPERANDS} --output jsonpa
 cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
 ```
 
+Potential issue related to `wa-data-governor` pods.
+
+```bash
+oc patch cm wa-data-governor-ibm-data-governor-all-search-config -n ${PROJECT_CPD_INST_OPERANDS} --patch='{"data": {"forceEphemeral": "true"}}'
+```
+
 7. Enable `zen-rsi-evictor-cron-job`.
 
 ```bash
@@ -504,7 +522,7 @@ cpd-cli manage apply-rsi-patches \
 1. Upgrade the cpdbr-tenant component for the instance. 
 
 **NOTE:**
-<br>This can be doing in a maintenance window
+<br>This can be doing in a maintenance window. <br>It needs Fusion version above 2.10
 
 ```bash
 export OADP_OPERATOR_NS=<oadp-operator-project>
@@ -515,8 +533,17 @@ cpd-cli oadp install \
 --component=cpdbr-tenant \
 --cpdbr-hooks-image-prefix=${PRIVATE_REGISTRY_LOCATION} \
 --tenant-operator-namespace=${PROJECT_CPD_INST_OPERATORS} \
---cpd-scheduler-namespace=${PROJECT_SCHEDULING_SERVICE} \
+--skip-recipes=true \
 --upgrade=true \
+--log-level=debug \
+--verbose
+```
+
+2. Configure the ibmcpd-tenant parent recipe.
+
+```bash
+cpd-cli oadp generate plan fusion parent-recipe \
+--tenant-operator-namespace=${PROJECT_CPD_INST_OPERATORS} \
 --log-level=debug \
 --verbose
 ```
