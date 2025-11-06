@@ -165,8 +165,18 @@ If your private registry is not secured omit the following arguments:
         grep "level=fatal" list_images.csv
         ```
 
-4. Confirm that the images were mirrored to the private container registry.
-    * 4.1 Inspect the contents of the private container registry.
+4. Mirror the images to the private container registry.
+```bash
+cpd-cli manage mirror-images \
+--components=${COMPONENTS} \
+--release=${VERSION} \
+--target_registry=${PRIVATE_REGISTRY_LOCATION} \
+--arch=${IMAGE_ARCH} \
+--case_download=false
+```
+
+5. Confirm that the images were mirrored to the private container registry.
+    * 5.1 Inspect the contents of the private container registry.
         ```bash
         cpd-cli manage list-images \
         --components=${COMPONENTS} \
@@ -174,7 +184,7 @@ If your private registry is not secured omit the following arguments:
         --target_registry=${PRIVATE_REGISTRY_LOCATION} \
         --case_download=false
         ```
-    * 4.2 Check the output for errors.
+    * 5.2 Check the output for errors.
         ```bash
         grep "level=fatal" list_images.csv
         ```
