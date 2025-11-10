@@ -194,6 +194,14 @@ Wait for the cpd-cli to return the following messages:
 [SUCCESS] ... Container olm-utils-play has been re-created
 ```
 
+3. Verify olm-utils-v3 container was created properly.
+
+```bash
+[root@alocalhost ~]# podman ps
+CONTAINER ID  IMAGE                                  COMMAND     CREATED         STATUS         PORTS       NAMES
+65675f908df0  icr.io/cpopen/cpd/olm-utils-v3:latest              17 seconds ago  Up 17 seconds              olm-utils-play-v3
+```
+
 ## Mirroring images directly to the private container registry
 
 1. Log in to the IBM Entitled Registry registry.
