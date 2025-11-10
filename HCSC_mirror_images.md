@@ -1,5 +1,178 @@
 # Mirroring images
 
+# Install IBM Software Hub CLI (cpd-cli)
+
+1. Download Version 14.2.2:
+
+https://www.ibm.com/links?url=https%3A%2F%2Fgithub.com%2FIBM%2Fcpd-cli%2Freleases
+
+For a Linux workstation, run this command:
+
+```bash
+wget https://github.com/IBM/cpd-cli/releases/download/v14.2.2/cpd-cli-linux-EE-14.2.2.tgz
+```
+
+2. Extract the content of the package.
+
+3. As a best practice, make the `cpd-cli` executable from any directory:
+
+* 3.1 Add the following line to your `~/.basrhc` file
+```bash
+export PATH=<fully-qualified-path-to-the-cpd-cli>:$PATH
+```
+
+4. Validate the installation.
+
+```bash
+cpd-cli version
+```
+
+## Setting up installation enviroment variables
+
+1. You might use the existing `cpd-vars.sh` file and modifying for this installation, so copy and save with a different name. Otherwise, you can copy the following and modify accordingly.
+
+```bash
+#===============================================================================
+# IBM Software Hub installation variables
+#===============================================================================
+
+# ------------------------------------------------------------------------------
+# Client workstation 
+# ------------------------------------------------------------------------------
+# Set the following variables if you want to override the default behavior of the IBM Software Hub CLI.
+#
+# To export these variables, you must uncomment each command in this section.
+
+# export CPD_CLI_MANAGE_WORKSPACE=<enter a fully qualified directory>
+# export OLM_UTILS_LAUNCH_ARGS=<enter launch arguments>
+
+
+# ------------------------------------------------------------------------------
+# Cluster
+# ------------------------------------------------------------------------------
+
+export OCP_URL=<enter your Red Hat OpenShift Container Platform URL>
+export OPENSHIFT_TYPE=<enter your deployment type>
+export IMAGE_ARCH=<enter your cluster architecture>
+# export OCP_USERNAME=<enter your username>
+# export OCP_PASSWORD=<enter your password>
+# export OCP_TOKEN=<enter your token>
+export SERVER_ARGUMENTS="--server=${OCP_URL}"
+# export LOGIN_ARGUMENTS="--username=${OCP_USERNAME} --password=${OCP_PASSWORD}"
+# export LOGIN_ARGUMENTS="--token=${OCP_TOKEN}"
+export CPDM_OC_LOGIN="cpd-cli manage login-to-ocp ${SERVER_ARGUMENTS} ${LOGIN_ARGUMENTS}"
+export OC_LOGIN="oc login ${SERVER_ARGUMENTS} ${LOGIN_ARGUMENTS}"
+
+
+# ------------------------------------------------------------------------------
+# Proxy server
+# ------------------------------------------------------------------------------
+
+# export PROXY_HOST=<enter your proxy server hostname>
+# export PROXY_PORT=<enter your proxy server port number>
+# export PROXY_USER=<enter your proxy server username>
+# export PROXY_PASSWORD=<enter your proxy server password>
+# export NO_PROXY_LIST=<a comma-separated list of domain names>
+
+
+# ------------------------------------------------------------------------------
+# Projects
+# ------------------------------------------------------------------------------
+
+export PROJECT_CERT_MANAGER=<enter your certificate manager project>
+export PROJECT_LICENSE_SERVICE=<enter your License Service project>
+export PROJECT_SCHEDULING_SERVICE=<enter your scheduling service project>
+# export PROJECT_IBM_EVENTS=<enter your IBM Events Operator project>
+# export PROJECT_PRIVILEGED_MONITORING_SERVICE=<enter your privileged monitoring service project>
+export PROJECT_CPD_INST_OPERATORS=<enter your IBM Software Hub operator project>
+export PROJECT_CPD_INST_OPERANDS=<enter your IBM Software Hub operand project>
+# export PROJECT_CPD_INSTANCE_TETHERED=<enter your tethered project>
+# export PROJECT_CPD_INSTANCE_TETHERED_LIST=<a comma-separated list of tethered projects>
+
+
+
+# ------------------------------------------------------------------------------
+# Storage
+# ------------------------------------------------------------------------------
+
+export STG_CLASS_BLOCK=<RWO-storage-class-name>
+export STG_CLASS_FILE=<RWX-storage-class-name>
+
+# ------------------------------------------------------------------------------
+# IBM Entitled Registry
+# ------------------------------------------------------------------------------
+
+export IBM_ENTITLEMENT_KEY=<enter your IBM entitlement API key>
+
+
+# ------------------------------------------------------------------------------
+# Private container registry
+# ------------------------------------------------------------------------------
+# Set the following variables if you mirror images to a private container registry.
+#
+# To export these variables, you must uncomment each command in this section.
+
+# export PRIVATE_REGISTRY_LOCATION=<enter the location of your private container registry>
+# export PRIVATE_REGISTRY_PUSH_USER=<enter the username of a user that can push to the registry>
+# export PRIVATE_REGISTRY_PUSH_PASSWORD=<enter the password of the user that can push to the registry>
+# export PRIVATE_REGISTRY_PULL_USER=<enter the username of a user that can pull from the registry>
+# export PRIVATE_REGISTRY_PULL_PASSWORD=<enter the password of the user that can pull from the registry>
+
+
+# ------------------------------------------------------------------------------
+# IBM Software Hub version
+# ------------------------------------------------------------------------------
+
+export VERSION=5.2.2
+
+
+# ------------------------------------------------------------------------------
+# Components
+# ------------------------------------------------------------------------------
+
+export COMPONENTS=ibm-licensing,scheduler,cpfs,cpd_platform
+# export COMPONENTS_TO_SKIP=<component-ID-1>,<component-ID-2>
+# export IMAGE_GROUPS=<image-group-1>,<image-group-2>
+```
+
+2. Update VERSION value in the `cpd-vars.sh`, if you copy the file form the existing installation to `5.2.2`.
+
+2. For COMPONENTS value in the `cpd-vars.sh`, please remove the existing componets add the following components.
+
+```bash
+db2oltp,datagate
+```
+
+<br>**NOTE:**<br>
+Don't remove these components.
+
+```bash
+ibm-licensing,scheduler,cpfs,cpd_platform
+```
+
+3. Validation of the variables. 
+
+* 3.1 Verify VERSION.
+```bash
+echo $VERSION
+```
+Output expected
+```bash
+[root@localhost ~]# echo $VERSION
+5.2.2
+```
+
+* 3.2 Verify COMPONENTS.
+
+```bash
+echo $COMPONENTS
+```
+Output expected
+```bash
+[root@api.vcgvz.cp.fyre.ibm.com ~]# echo $COMPONENTS
+ibm-licensing,scheduler,cpfs,cpd_platform,db2oltp,datagate
+```
+
 ## Obtaining the olm-utils-v3 image
 
 1. Same workstation inside the cluster network.
@@ -14,113 +187,16 @@ Wait for the cpd-cli to return the following messages:
 [SUCCESS] ... Container olm-utils-play has been re-created
 ```
 
-2. Different workstation inside the cluster network.
-
-From a workstation that can connect to the internet:
-
-    Ensure that Docker or Podman is running on the workstation.
-    Run the following command to save the olm-utils-v3 image to the client workstation:
-
-    x86-64 clusters
-
-        cpd-cli manage save-image \
-        --from=icr.io/cpopen/cpd/olm-utils-v3:${VERSION}.amd64
-
-    This command saves the image as a compressed TAR file named icr.io_cpd_olm-utils-v3_${VERSION}.amd64.tar.gz in the cpd-cli-workspace/olm-utils-workspace/work/offline directory.
-ppc64le clusters
-
-    cpd-cli manage save-image \
-    --from=icr.io/cpopen/cpd/olm-utils-v3:${VERSION}.ppc64le
-
-    This command saves the image as a compressed TAR file named icr.io_cpopen_cpd_olm-utils-v3_${VERSION}.ppc64le.tar.gz in the cpd-cli-workspace/olm-utils-workspace/work/offline directory.
-s390x clusters
-
-    cpd-cli manage save-image \
-    --from=icr.io/cpopen/cpd/olm-utils-v3:${VERSION}.s390x
-
-        This command saves the image as a compressed TAR file named icr.io_cpopen_cpd_olm-utils-v3_${VERSION}.s390x.tar.gz in the cpd-cli-workspace/olm-utils-workspace/work/offline directory.
-
-Transfer the compressed file to a client workstation that can connect to the cluster.
-
-Ensure that you place the TAR file in the work/offline directory:
-
-x86-64 clusters
-    icr.io_cpd_olm-utils-v3_${VERSION}.amd64.tar.gz
-ppc64le clusters
-    icr.io_cpopen_cpd_olm-utils-v3_${VERSION}.ppc64le.tar.gz
-s390x clusters
-    icr.io_cpopen_cpd_olm-utils-v3_${VERSION}.s390x.tar.gz
-
-From the workstation that can connect to the cluster:
-
-    Ensure that Docker or Podman is running on the workstation.
-    Run the following command to load the olm-utils-v3 image on the client workstation:
-
-    x86-64 clusters
-
-        cpd-cli manage load-image \
-        --source-image=icr.io/cpopen/cpd/olm-utils-v3:${VERSION}.amd64
-
-    The command returns the following message when the image is loaded:
-
-    Loaded image: icr.io/cpopen/cpd/olm-utils:latest
-
-ppc64le clusters
-
-    cpd-cli manage load-image \
-    --source-image=icr.io/cpopen/cpd/olm-utils-v3:${VERSION}.ppc64le
-
-    The command returns the following message when the image is loaded:
-
-    Loaded image: icr.io/cpopen/cpd/olm-utils:latest.ppc64le
-
-s390x clusters
-
-    cpd-cli manage load-image \
-    --source-image=icr.io/cpopen/cpd/olm-utils-v3:${VERSION}.s390x
-
-    The command returns the following message when the image is loaded:
-
-    Loaded image: icr.io/cpopen/cpd/olm-utils:latest.s390x
-
-Set the OLM_UTILS_IMAGE environment variable to ensure that the cpd-cli uses the version of the image on the client workstation:
-
-x86-64 clusters
-
-    export OLM_UTILS_IMAGE=icr.io/cpopen/cpd/olm-utils-v3:${VERSION}.amd64
-
-ppc64le clusters
-
-    export OLM_UTILS_IMAGE=icr.io/cpopen/cpd/olm-utils-v3:${VERSION}.ppc64le
-
-s390x clusters
-
-    export OLM_UTILS_IMAGE=icr.io/cpopen/cpd/olm-utils-v3:${VERSION}.s390x
-
 ## Downloading CASE packages
 
-1. Download the CASE packages for the components that you plan to install. IBM Cloud Pak Open Container Initiative.
+1. Download the CASE packages for the components that you plan to install.
 ```bash
 cpd-cli manage case-download \
 --components=${COMPONENTS} \
---release=${VERSION} \
---from_oci=true
-```
-2. If you plan to install IBM Software Hub Control Center, download the CASE package for the ibm_swhcc component. IBM Cloud Pak Open Container Initiative.
-```bash
-cpd-cli manage case-download \
---components=ibm_swhcc \
---release=${VERSION} \
---from_oci=true
+--release=${VERSION}
 ```
 
-3. Set the following permissions on the work directory.
-```bash
-chown -R 1001 ./work
-chmod -R 775 ./work
-```
-
-4. Restart the container.
+2. Restart the container.
 ```bash
 cpd-cli manage restart-container
 ```
