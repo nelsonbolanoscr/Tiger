@@ -169,7 +169,7 @@ echo $COMPONENTS
 ```
 Output expected
 ```bash
-[root@api.vcgvz.cp.fyre.ibm.com ~]# echo $COMPONENTS
+[root@localhost ~]# echo $COMPONENTS
 ibm-licensing,scheduler,cpfs,cpd_platform,db2oltp,datagate
 ```
 
