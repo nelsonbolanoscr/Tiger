@@ -173,21 +173,7 @@ Output expected
 ibm-licensing,scheduler,cpfs,cpd_platform,db2oltp,datagate
 ```
 
-## Obtaining the olm-utils-v3 image
-
-1. Same workstation inside the cluster network.
-
-```bash
-cpd-cli manage restart-container
-```
-Wait for the cpd-cli to return the following messages:
-```bash
-[SUCCESS] ... Successfully pulled the container image icr.io/cpopen/cpd/olm-utils-v3:latest
-[SUCCESS] ... Successfully started the container olm-utils-play
-[SUCCESS] ... Container olm-utils-play has been re-created
-```
-
-## Downloading CASE packages
+## Downloading CASE packages and obtaining the olm-utils-v3 image
 
 1. Download the CASE packages for the components that you plan to install.
 ```bash
@@ -199,6 +185,13 @@ cpd-cli manage case-download \
 2. Restart the container.
 ```bash
 cpd-cli manage restart-container
+```
+
+Wait for the cpd-cli to return the following messages:
+```bash
+[SUCCESS] ... Successfully pulled the container image icr.io/cpopen/cpd/olm-utils-v3:latest
+[SUCCESS] ... Successfully started the container olm-utils-play
+[SUCCESS] ... Container olm-utils-play has been re-created
 ```
 
 ## Mirroring images directly to the private container registry
