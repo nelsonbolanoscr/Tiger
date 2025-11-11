@@ -137,7 +137,7 @@ export COMPONENTS=ibm-licensing,scheduler,cpfs,cpd_platform
 
 2. Update VERSION value in the `cpd-vars.sh`, if you copy the file form the existing installation to `5.2.2`.
 
-2. For COMPONENTS value in the `cpd-vars.sh`, please remove the existing componets add the following components.
+3. For COMPONENTS value in the `cpd-vars.sh`, please remove the existing componets add the following components.
 
 ```bash
 db2oltp,datagate
@@ -150,9 +150,14 @@ Don't remove these components.
 ibm-licensing,scheduler,cpfs,cpd_platform
 ```
 
-3. Validation of the variables. 
+4. Source the `cpd-vars.sh`
+```bash
+source cpd-vars.sh
+```
 
-* 3.1 Verify VERSION.
+5. Validation of the variables. 
+
+* 5.1 Verify VERSION.
 ```bash
 echo $VERSION
 ```
@@ -162,7 +167,7 @@ Output expected
 5.2.2
 ```
 
-* 3.2 Verify COMPONENTS.
+* 5.2 Verify COMPONENTS.
 
 ```bash
 echo $COMPONENTS
