@@ -377,10 +377,6 @@ cpd-cli manage authorize-instance-topology \
 --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
 ```
 
-3. Annotating IBM Software Hub projects (namespaces) to enable embedded Db2 databases to use the restricted-v2 SCC
-
-https://www.ibm.com/docs/en/software-hub/5.2.x?topic=hub-annotating-projects-embedded-db2-databases
-
 ## 4. Installing an instance of IBM Software Hub
 
 1. Review the license terms.
@@ -455,32 +451,7 @@ cpd-cli manage get-cpd-instance-details \
 
 ## 5. Setting up IBM Software Hub
 
-1. Installing privileged monitors for an instance.
-
-```bash
-cpd-cli manage apply-privileged-monitoring-service \
---privileged_service_ns=${PROJECT_PRIVILEGED_MONITORING_SERVICE} \
---cluster_components_ns=${PROJECT_SCHEDULING_SERVICE} \
---cpd_operator_ns=${PROJECT_CPD_INST_OPERATORS} \
---cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
-```
-2. Installing the IBM Software Hub configuration admission controller webhook
-
-* 2.1 Install the configuration admission controller webhook.
-
-```bash
-cpd-cli manage install-cpd-config-ac \
---cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
-```
-
-* 2.2 Enable the configuration admission controller webhook.
-
-```bash
-cpd-cli manage enable-cpd-config-ac \
---cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
-```
-
-3. Applying Entitlement.
+1. Applying Entitlement.
 
 ```bash
 cpd-cli manage apply-entitlement \
@@ -490,7 +461,7 @@ cpd-cli manage apply-entitlement \
 
 ## 6. Install Db2 Service
 
-1. Installing the service
+1. Installing the Db2 service
 
 * 1.1 Run the following command to create the required OLM objects for Db2 in the operators project for the instance.
 
@@ -519,11 +490,42 @@ cpd-cli manage get-cr-status \
 --components=db2oltp
 ```
 
+2. Installing Db2 Data Management Console.
+
+* 2.1 Run the following command to create the required OLM objects for Db2 Data Management Console in the operators project for the instance.
+
+```bash
+cpd-cli manage apply-olm \
+--release=${VERSION} \
+--cpd_operator_ns=${PROJECT_CPD_INST_OPERATORS} \
+--components=dmc
+```
+
+* 2.2 Create the custom resource for Db2 Data Management Console.
+
+```bash
+cpd-cli manage apply-cr \
+--components=dmc \
+--release=${VERSION} \
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--license_acceptance=true
+```
+
+* 2.3 Confirm that the custom resource status is Completed.
+
+```bash
+cpd-cli manage get-cr-status \
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--components=dmc
+```
+
 ## 7. Install DataGate Service
 
 1. Prerequisite
 
 * 1.1 You must install, provision, and configure a Db2 or Db2 Warehouse instance on Cloud Pak for Data for each Data Gate instance.
+
+https://www.ibm.com/docs/en/software-hub/5.2.x?topic=pi-installing-db2-instance-data-gate-cloud-pak-data
 
 2. Installing the service.
 

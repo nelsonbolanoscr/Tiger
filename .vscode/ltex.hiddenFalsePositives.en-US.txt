@@ -1,4 +1,0 @@
-{"rule":"CD_NN","sentence":"^\\QIBM Match 360 5.1.1 patch - Multiple fixes for IBM Match 360\nApply patch.\\E$"}
-{"rule":"A_INSTALL","sentence":"^\\Q3.2.6 On the Install Operator page:\ni.\\E$"}
-{"rule":"WHITESPACE_RULE","sentence":"^\\QNOTE:  The following instruction works to update the current version of \\E(?:Dummy|Ina|Jimmy-)[0-9]+\\Q.\\E$"}
-{"rule":"WHITESPACE_RULE","sentence":"^\\QNOTE:  If you are running the correct version of the IBM Events Operator based on the version of IBM Software Hub that is installed, no action is required.\\E$"}
