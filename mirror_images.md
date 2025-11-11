@@ -143,7 +143,7 @@ export COMPONENTS=ibm-licensing,scheduler,cpfs,cpd_platform
 db2oltp,datagate
 ```
 
-<br>**NOTE:**<br>
+**NOTE:**<br>
 Don't remove these components.
 
 ```bash
@@ -155,7 +155,7 @@ ibm-licensing,scheduler,cpfs,cpd_platform
 source cpd-vars.sh
 ```
 
-<br>**NOTE:**<br>
+**NOTE:**<br>
 Use the new `cpd-vars.sh` and the new name accordingly.
 
 5. Validation of the variables. 
