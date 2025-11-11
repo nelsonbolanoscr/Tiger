@@ -155,6 +155,9 @@ ibm-licensing,scheduler,cpfs,cpd_platform
 source cpd-vars.sh
 ```
 
+<br>**NOTE:**<br>
+Use the new `cpd-vars.sh` and the new name accordingly.
+
 5. Validation of the variables. 
 
 * 5.1 Verify VERSION.
