@@ -26,7 +26,7 @@ wget https://github.com/IBM/cpd-cli/releases/download/v14.2.2/cpd-cli-linux-EE-1
 
 * 2.1 Untar content.
 ```bash
-tar xvf cpd-cli-s390x-EE-14.2.2.tgz
+tar xvf cpd-cli-linux-EE-14.2.2.tgz
 ```
  * 2.2 Make the cpd-cli executable from any directory.
 
