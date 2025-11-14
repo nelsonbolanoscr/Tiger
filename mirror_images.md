@@ -140,7 +140,7 @@ export COMPONENTS=ibm-licensing,scheduler,cpfs,cpd_platform
 3. For COMPONENTS value in the `cpd-vars.sh`, please remove the existing componets add the following components.
 
 ```bash
-db2oltp,datagate
+db2oltp,datagate,dmc
 ```
 
 **NOTE:**<br>
@@ -178,7 +178,7 @@ echo $COMPONENTS
 Output expected
 ```bash
 [root@localhost ~]# echo $COMPONENTS
-ibm-licensing,scheduler,cpfs,cpd_platform,db2oltp,datagate
+ibm-licensing,scheduler,cpfs,cpd_platform,db2oltp,datagate,dmc
 ```
 
 ## Downloading CASE packages and obtaining the olm-utils-v3 image
